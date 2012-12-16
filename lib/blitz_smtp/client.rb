@@ -9,7 +9,17 @@ class BlitzSMTP::Client
     wait_for_protocol_start
   end
 
+  def disconnect
+    send_quit
+    @socket.close
+  end
+
   protected
+
+  def send_quit
+    @socket.puts "QUIT"
+    @socket.gets
+  end
 
   def wait_for_protocol_start
     @socket.gets

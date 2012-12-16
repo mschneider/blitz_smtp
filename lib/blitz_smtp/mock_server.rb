@@ -7,6 +7,13 @@ class BlitzSMTP::MockServer
     @server_thread = Thread.start do
       @client_socket = @server_socket.accept
       send_greeting
+      loop {
+        command = @client_socket.gets
+        case command
+        when /^QUIT/
+          disconnect_client
+        end
+      }
     end
   end
 
@@ -15,7 +22,7 @@ class BlitzSMTP::MockServer
   end
 
   def port
-    @server_socket.addr[1]
+    @server_socket.connect_address.ip_port
   end
 
   def connected_to_client?
@@ -30,7 +37,17 @@ class BlitzSMTP::MockServer
 
   protected
 
+  def disconnect_client
+    send_to_client 221, "closing transmission channel"
+    @client_socket.close
+    @client_socket = nil
+  end
+
   def send_greeting
-    @client_socket.puts "220 #{address} BlitzSMTP::MockServer"
+    send_to_client 220, self.class.to_s
+  end
+
+  def send_to_client nr, message
+    @client_socket.puts "#{nr} #{address} #{message}"
   end
 end

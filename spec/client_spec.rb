@@ -16,6 +16,10 @@ describe BlitzSMTP::Client do
     @server.should be_connected_to_client
   end
 
-  
+  it "disconnects from the mock server" do
+    @client.connect
+    @client.disconnect
+    @server.should_not be_connected_to_client
+  end
 
 end
