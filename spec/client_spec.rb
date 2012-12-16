@@ -53,6 +53,8 @@ describe BlitzSMTP::Client do
     lambda { @client.connect }.should \
       raise_error(BlitzSMTP::Client::EHLOUnsupported,
                   "the server must implement RFC2920")
+    @client.should_not be_connected
+    @server.should_not be_connected_to_client
   end
 
   it "requires the feature PIPELINING" do
@@ -60,6 +62,8 @@ describe BlitzSMTP::Client do
     lambda { @client.connect }.should \
       raise_error(BlitzSMTP::Client::PipelingUnsupported,
                   "the server must implement RFC2920")
+    @client.should_not be_connected
+    @server.should_not be_connected_to_client
   end
 
 end

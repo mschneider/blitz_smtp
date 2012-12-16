@@ -14,6 +14,9 @@ module BlitzSMTP
       @socket = TCPSocket.open @server_address, @server_port
       wait_for_protocol_start
       check_features
+    rescue
+      disconnect if connected?
+      raise
     end
 
     class NotConnected < StandardError; end
@@ -21,7 +24,7 @@ module BlitzSMTP
     def disconnect
       raise NotConnected unless connected?
       send_command "QUIT"
-      @socket.gets
+      read_response
       @socket.close
       @socket = nil
     end
@@ -32,15 +35,20 @@ module BlitzSMTP
 
     protected
 
-    def send_command command
-      @socket.print "#{command}\r\n"
+    def send_command(*args)
+      command = Command.create(*args)
+      command.write_to(@socket)
+    end
+
+    def read_response
+      Response.read_from(@socket)
     end
 
     def check_features
       send_command "EHLO localhost"
       responses = []
       loop do
-        responses << Response.new(@socket.gets)
+        responses << read_response
         break unless responses.last.continued?
       end
       unless responses.first.status_code == 250
@@ -52,7 +60,7 @@ module BlitzSMTP
     end
 
     def wait_for_protocol_start
-      @socket.gets
+      read_response
     end
   end
 end

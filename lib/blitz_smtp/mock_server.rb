@@ -43,24 +43,24 @@ module BlitzSMTP
     end
 
     def send_greeting
-      send_to_client 220, self.class.to_s
+      send_to_client(220, self.class.to_s)
     end
 
     def send_command_unknown(command)
       send_to_client(554, "received unknown command: #{command}")
     end
 
-    def send_to_client nr, message, continue=false
-      separator = continue ? "-" : " "
-      @client_socket.print "#{nr}#{separator}#{message}\r\n"
+    def send_to_client(*args)
+      response = Response.create(*args)
+      response.write_to(@client_socket)
     end
 
     def mock_smtp
       send_greeting
       catch(:disconnect) do
         loop do
-          command = @client_socket.gets
-          send("received_#{command[0..3].downcase}", command)
+          command = Command.read_from(@client_socket)
+          send("received_#{command.name.downcase}", command)
         end
       end
       disconnect_client
@@ -78,9 +78,9 @@ module BlitzSMTP
       throw :disconnect
     end
 
-    def method_missing(method, *args)
-      puts "could not identify #{args} [##{method}]"
-      send_command_unknown(args.first)
+    def method_missing(method, command, *_)
+      puts "could not identify #{command} [##{method}]"
+      send_command_unknown(command)
     end
   end
 end
