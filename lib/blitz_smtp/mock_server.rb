@@ -5,14 +5,17 @@ class BlitzSMTP::MockServer
   def initialize
     @server_socket = TCPServer.new(address, 0)
     @server_thread = Thread.start do
-      @client_socket = @server_socket.accept
-      send_greeting
       loop {
-        command = @client_socket.gets
-        case command
-        when /^QUIT/
-          disconnect_client
-        end
+        @client_socket = @server_socket.accept
+        send_greeting
+        loop {
+          command = @client_socket.gets
+          case command
+          when /^QUIT/
+            disconnect_client
+            break
+          end
+        }
       }
     end
   end

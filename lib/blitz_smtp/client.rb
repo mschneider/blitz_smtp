@@ -4,12 +4,18 @@ class BlitzSMTP::Client
     @server_address, @server_port = address, port
   end
 
+  class AlreadyConnected < StandardError; end
+
   def connect
+    raise AlreadyConnected if connected?
     @socket = TCPSocket.open @server_address, @server_port
     wait_for_protocol_start
   end
 
+  class NotConnected < StandardError; end
+
   def disconnect
+    raise NotConnected unless connected?
     send_quit
     @socket.close
     @socket = nil
