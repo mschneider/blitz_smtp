@@ -46,6 +46,10 @@ module BlitzSMTP
       send_to_client 220, self.class.to_s
     end
 
+    def send_command_unknown(command)
+      send_to_client(554, "received unknown command: #{command}")
+    end
+
     def send_to_client nr, message, continue=false
       separator = continue ? "-" : " "
       @client_socket.print "#{nr}#{separator}#{message}\r\n"
@@ -63,7 +67,7 @@ module BlitzSMTP
     end
 
     def received_ehlo(command)
-      return send_to_client(554, "received: #{command}") unless esmtp
+      return send_command_unknown(command) unless esmtp
       continued_messages = [address] + features[0..-2]
       continued_messages.each { |m| send_to_client 250, m, true }
       send_to_client 250, features.last
@@ -76,7 +80,7 @@ module BlitzSMTP
 
     def method_missing(method, *args)
       puts "could not identify #{args} [##{method}]"
-      send_to_client 500, "received: #{args.first}"
+      send_command_unknown(args.first)
     end
   end
 end
