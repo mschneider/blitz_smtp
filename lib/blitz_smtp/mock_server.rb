@@ -43,14 +43,14 @@ module BlitzSMTP
     end
 
     def send_greeting
-      send_to_client(220, self.class.to_s)
+      respond 220, self.class.to_s
     end
 
     def send_command_unknown(command)
-      send_to_client(554, "received unknown command: #{command}")
+      respond 554, "received unknown command: #{command}"
     end
 
-    def send_to_client(*args)
+    def respond(*args)
       response = Response.create(*args)
       response.write_to(@client_socket)
     end
@@ -69,12 +69,12 @@ module BlitzSMTP
     def received_ehlo(command)
       return send_command_unknown(command) unless esmtp
       continued_messages = [address] + features[0..-2]
-      continued_messages.each { |m| send_to_client 250, m, true }
-      send_to_client 250, features.last
+      continued_messages.each { |m| respond 250, m, true }
+      respond 250, features.last
     end
 
     def received_quit(_)
-      send_to_client 221, "bye"
+      respond 221, "bye"
       throw :disconnect
     end
 

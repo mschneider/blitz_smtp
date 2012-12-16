@@ -7,12 +7,12 @@ module BlitzSMTP
 
     class AlreadyConnected < StandardError; end
     class EHLOUnsupported < StandardError; end
-    class PipelingUnsupported < StandardError; end
+    class PipeliningUnsupported < StandardError; end
 
     def connect
       raise AlreadyConnected if connected?
       @socket = TCPSocket.open @server_address, @server_port
-      wait_for_protocol_start
+      read_response # ignore actual response FIXME
       check_features
     rescue
       disconnect if connected?
@@ -55,12 +55,8 @@ module BlitzSMTP
         raise(EHLOUnsupported, "the server must implement RFC2920")
       end
       unless responses.any? { |r| r.message == "PIPELINING" }
-        raise(PipelingUnsupported, "the server must implement RFC2920")
+        raise(PipeliningUnsupported, "the server must implement RFC2920")
       end
-    end
-
-    def wait_for_protocol_start
-      read_response
     end
   end
 end

@@ -60,7 +60,7 @@ describe BlitzSMTP::Client do
   it "requires the feature PIPELINING" do
     @server.features.delete("PIPELINING")
     lambda { @client.connect }.should \
-      raise_error(BlitzSMTP::Client::PipelingUnsupported,
+      raise_error(BlitzSMTP::Client::PipeliningUnsupported,
                   "the server must implement RFC2920")
     @client.should_not be_connected
     @server.should_not be_connected_to_client
