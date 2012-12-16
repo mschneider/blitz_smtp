@@ -12,6 +12,11 @@ class BlitzSMTP::Client
   def disconnect
     send_quit
     @socket.close
+    @socket = nil
+  end
+
+  def connected?
+    not @socket.nil?
   end
 
   protected

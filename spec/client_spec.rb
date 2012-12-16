@@ -13,12 +13,14 @@ describe BlitzSMTP::Client do
 
   it "connects to the mock server" do
     @client.connect
+    @client.should be_connected
     @server.should be_connected_to_client
   end
 
   it "disconnects from the mock server" do
     @client.connect
     @client.disconnect
+    @client.should_not be_connected
     @server.should_not be_connected_to_client
   end
 
