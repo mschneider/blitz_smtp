@@ -1,4 +1,4 @@
-# BlitzSmtp
+# BlitzSMTP
 
 BlitzSMTP implements RFC2920 (Command Pipelining) to achieve high
 message throughput. It is no replacement for Net::SMTP, it's just
@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 ```ruby
-smtp = BlitzSMTP.new(address, port)
+smtp = BlitzSMTP::Client.new(address, port)
     
 # open the connection
 smtp.connect
