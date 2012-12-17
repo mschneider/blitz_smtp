@@ -2,10 +2,9 @@ module BlitzSMTP
 
   class Message
 
-    TERMINATOR = "\r\n"
     class Invalid < StandardError; end
 
-    def initialize(string)
+    def initialize(string="")
       @string = string
     end
 
@@ -13,14 +12,21 @@ module BlitzSMTP
       @string
     end
 
-    def write_to(stream)
-      stream.print("#{self}#{TERMINATOR}")
+    def terminator
+      "\r\n"
     end
 
-    def self.read_from(stream)
-      including_terminator = stream.gets(TERMINATOR)
-      excluding_terminator = /^(.*)#{TERMINATOR}$/.match(including_terminator).to_a.last
-      new(excluding_terminator)
+    def write_to(stream)
+      #puts "#{stream.local_address.ip_port} << #{"#{self}#{terminator}".inspect}"
+      stream.print("#{self}#{terminator}")
+    end
+
+    def read_from(stream)
+      including_terminator = stream.gets(terminator)
+      #puts "#{stream.local_address.ip_port} >> #{(including_terminator).inspect}"
+      excluding_terminator = /^(.*)#{terminator}$/.match(including_terminator).to_a.last
+      @string = excluding_terminator
+      self
     end
   end
 
@@ -35,6 +41,12 @@ module BlitzSMTP
 
     def self.create(name, argument="")
       new("#{name} #{argument}")
+    end
+  end
+
+  class Data < Message
+    def terminator
+      "\r\n.\r\n"
     end
   end
 

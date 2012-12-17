@@ -48,6 +48,15 @@ describe BlitzSMTP::Client do
     @server.should be_connected_to_client
   end
 
+  it "can send an email" do
+    @client.connect
+    @client.send_message "mail@from.com", "mail@to.com", "message text"
+    last_mail = @server.accepted_emails.last
+    last_mail.from.should == "<mail@from.com>"
+    last_mail.to.should == "<mail@to.com>"
+    last_mail.data.should == "message text"
+  end
+
   it "requires ESMTP" do
     @server.esmtp = false
     lambda { @client.connect }.should \

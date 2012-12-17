@@ -1,13 +1,15 @@
+require 'ostruct'
 require 'socket'
 
 module BlitzSMTP
   class MockServer
 
-    attr_accessor :esmtp, :features
+    attr_accessor :esmtp, :features, :accepted_emails
 
     def initialize
       @esmtp = true
       @features = []
+      @accepted_emails = []
       @server_socket = TCPServer.new(address, 0)
       @server_thread = Thread.start do
         loop do
@@ -59,7 +61,7 @@ module BlitzSMTP
       send_greeting
       catch(:disconnect) do
         loop do
-          command = Command.read_from(@client_socket)
+          command = Command.new.read_from(@client_socket)
           send("received_#{command.name.downcase}", command)
         end
       end
@@ -71,6 +73,23 @@ module BlitzSMTP
       continued_messages = [address] + features[0..-2]
       continued_messages.each { |m| respond 250, m, true }
       respond 250, features.last
+    end
+
+    def received_mail(command)
+      @current_mail = { from: command.argument.to_s.gsub(/^FROM:/, '') }
+    end
+
+    def received_rcpt(command)
+      @current_mail[:to] = command.argument.to_s.gsub(/^TO:/, '')
+    end
+
+    def received_data(_)
+      respond 250, "ok"
+      respond 250, "ok"
+      respond 354, "start mail input"
+      @current_mail[:data] = Data.new.read_from(@client_socket).to_s
+      accepted_emails << OpenStruct.new(@current_mail)
+      respond 250, "ok"
     end
 
     def received_quit(_)
