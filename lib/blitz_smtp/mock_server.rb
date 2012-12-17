@@ -77,15 +77,15 @@ module BlitzSMTP
 
     def received_mail(command)
       @current_mail = { from: command.argument.to_s.gsub(/^FROM:/, '') }
+      respond 250, "ok"
     end
 
     def received_rcpt(command)
       @current_mail[:to] = command.argument.to_s.gsub(/^TO:/, '')
+      respond 250, "ok"
     end
 
     def received_data(_)
-      respond 250, "ok"
-      respond 250, "ok"
       respond 354, "start mail input"
       @current_mail[:data] = Data.new.read_from(@client_socket).to_s
       accepted_emails << OpenStruct.new(@current_mail)
