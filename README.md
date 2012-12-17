@@ -21,14 +21,22 @@ Or install it yourself as:
 ## Usage
 
     smtp = BlitzSMTP.new(address, port)
+    
     # open the connection
     smtp.connect
-    # afterwards you can send message
+    
+    # after opening the connection you can send messages
     smtp.send_message "mail@from.com", "mail@to.com", <<-EOM
     Subject: Hi
     
     Hello world
     EOM
+    smtp.send_message "mail@from.com", "other@to.com", <<-EOM
+    Subject: Hey
+    
+    You too
+    EOM
+    
     # when you're done close the connection
     smtp.disconnect
 
