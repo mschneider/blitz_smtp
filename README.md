@@ -19,24 +19,24 @@ Or install it yourself as:
     $ gem install blitz_smtp
 
 ## Usage
-
-    smtp = BlitzSMTP.new(address, port)
+```ruby
+smtp = BlitzSMTP.new(address, port)
     
-    # open the connection
-    smtp.connect
+# open the connection
+smtp.connect
     
-    # after opening the connection you can send messages
-    smtp.send_message "mail@from.com", "mail@to.com", <<-EOM
-    Subject: Hi
+# after opening the connection you can send messages
+smtp.send_message "mail@from.com", "mail@to.com", <<-EOM
+Subject: Hi
     
-    Hello world
-    EOM
-    smtp.send_message "mail@from.com", "other@to.com", <<-EOM
-    Subject: Hey
+Hello world
+EOM
+smtp.send_message "mail@from.com", "other@to.com", <<-EOM
+Subject: Hey
     
-    You too
-    EOM
+You too
+EOM
     
-    # when you're done close the connection
-    smtp.disconnect
-
+# when you're done close the connection
+smtp.disconnect
+```
