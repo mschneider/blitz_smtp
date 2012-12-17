@@ -8,9 +8,9 @@ Gem::Specification.new do |gem|
   gem.version       = BlitzSMTP::VERSION
   gem.authors       = ["Maximilian Schneider"]
   gem.email         = ["mail@maximilianschneider.net"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{BlitzSMTP implements RFC2920 (Command Pipelining)}
-  gem.homepage      = ""
+  gem.description   = %q{BlitzSMTP implements RFC2920 (Command Pipelining) to achieve high message throughput}
+  gem.summary       = %q{BlitzSMTP is no replacement for Net::SMTP, it's just faster}
+  gem.homepage      = "https://github.com/mschneider/blitz_smtp"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
