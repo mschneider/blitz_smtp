@@ -1,6 +1,8 @@
 # BlitzSmtp
 
-TODO: Write a gem description
+BlitzSMTP implements RFC2920 (Command Pipelining) to achieve high
+message throughput. It is no replacement for Net::SMTP, it's just
+faster.
 
 ## Installation
 
@@ -18,12 +20,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    smtp = BlitzSMTP.new(address, port)
+    # open the connection
+    smtp.connect
+    # afterwards you can send message
+    smtp.send_message "mail@from.com", "mail@to.com", <<-EOM
+    Subject: Hi
+    
+    Hello world
+    EOM
+    # when you're done close the connection
+    smtp.disconnect
 
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
